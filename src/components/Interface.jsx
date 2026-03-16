@@ -7,6 +7,7 @@ import { useAtom } from "jotai";
 import { currentProjectAtom } from "./Projects";
 import { currentCertificationAtom } from "./Certifications";
 import cvChellys from "../assets/cvChellys.pdf";
+import { Projects as projectsData } from "../constants/Projects";
 
 const Section = (props) => {
   const { children, mobileTop } = props;
@@ -201,11 +202,13 @@ const ProjectsSection = () => {
   const [currentProject, setCurrentProject] = useAtom(currentProjectAtom);
 
   const nextProject = () => {
-    setCurrentProject((currentProject + 1) % projects.length);
+    setCurrentProject((prev) => (prev + 1) % projectsData.length);
   };
 
   const previousProject = () => {
-    setCurrentProject((currentProject - 1 + projects.length) % projects.length);
+    setCurrentProject(
+      (prev) => (prev - 1 + projectsData.length) % projectsData.length,
+    );
   };
 
   return (
