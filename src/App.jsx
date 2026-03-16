@@ -12,18 +12,28 @@ import ScrollManager from "./components/ScrollManager";
 function App() {
   const [section, setSection] = useState(0);
   const [menuOpened, setMenuOpened] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setMenuOpened(false);
   }, [section]);
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
+          <div className="h-16 w-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
       <MotionConfig
         transition={{
           ...framerMotionConfig,
         }}
       >
-        <Canvas shadows camera={{ position: [0, 1.5, 7], fov: 42 }}>
+        <Canvas
+          shadows
+          camera={{ position: [0, 1.5, 7], fov: 42 }}
+          onCreated={() => setIsLoading(false)}
+        >
           <ScrollControls pages={5} damping={0.1}>
             <ScrollManager
               section={section}
