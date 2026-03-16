@@ -1,7 +1,6 @@
 import React from "react";
 import { Skills } from "../constants/Skills";
 import { Languages } from "../constants/Languages";
-import { projects } from "../constants/projects";
 import { certifications } from "../constants/certifications";
 import { motion } from "framer-motion";
 import { useAtom } from "jotai";
@@ -14,7 +13,9 @@ const Section = (props) => {
   return (
     <motion.section
       className={`min-h-screen w-screen px-6 sm:px-10 mx-auto flex flex-col items-start pointer-events-none ${
-        mobileTop ? "justify-start mt-6 md:mt-0 md:justify-center" : "justify-center"
+        mobileTop
+          ? "justify-start mt-6 md:mt-0 md:justify-center"
+          : "justify-center"
       }`}
       initial={{ opacity: 0, y: 50 }}
       whileInView={{

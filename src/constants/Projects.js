@@ -1,4 +1,4 @@
-export const projects = [
+export const Projects = [
   {
     img: "src/assets/projects/articlesPage.png",
     title: "Articles Page",

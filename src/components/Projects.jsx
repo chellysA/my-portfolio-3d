@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { projects } from "../constants/projects";
+import { projects } from "../constants/Projects";
 import { Image, Text } from "@react-three/drei";
 import { atom, useAtom } from "jotai";
 import { useEffect, useMemo, useRef } from "react";
