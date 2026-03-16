@@ -32,7 +32,7 @@ export const Skills = [
     level: 40,
   },
   {
-    title: "Github",
+    title: "Mobile Development",
     level: 50,
   },
 ];

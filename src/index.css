@@ -7,3 +7,9 @@
 body {
   margin: 0;
 }
+
+/* Evitar que el navegador intercepte gestos sobre el canvas (scroll, pull-to-refresh, selección) */
+canvas {
+  touch-action: none; /* Obligatorio para OrbitControls en mobile */
+  pointer-events: auto !important;
+}

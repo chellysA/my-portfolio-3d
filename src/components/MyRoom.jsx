@@ -76,14 +76,14 @@ export function MyRoom(props) {
     <group {...props} dispose={null}>
       <pointLight
         name="Point001"
-        intensity={5.229}
+        intensity={1.229}
         decay={2}
         position={[-1.587, 1.259, -1.171]}
         rotation={[-Math.PI / 2, 0, 0]}
       />
       <pointLight
         name="Point002"
-        intensity={3.333}
+        intensity={2.333}
         decay={2}
         position={[-1.501, 1.406, -1.157]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -124,7 +124,8 @@ export function MyRoom(props) {
         ref={guitarRef}
         name="guitar"
         position={[0.084, 0.161, -0.946]}
-        scale={[0, 0, 0]}
+        // Evitamos “parpadeo” inicial: ya está visible en la primera sección
+        scale={section === 0 ? [1, 1, 1] : [0, 0, 0]}
       >
         <mesh
           name="Mesh59_Model_1"
@@ -168,23 +169,16 @@ export function MyRoom(props) {
             name="books002_books_on_desk_0"
             geometry={nodes.books002_books_on_desk_0.geometry}
             material={materials.books_on_desk}
-            position={[0, 0.301, 0]}
+            position={[0, 0.301, -0.066]}
           />
         </group>
-        <mesh
-          name="box_BOX_ON_SHELF_0"
-          geometry={nodes.box_BOX_ON_SHELF_0.geometry}
-          material={materials.BOX_ON_SHELF}
-          position={[-148.83, 139.171, 108.212]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          scale={100}
-        />
+
         <group
           ref={chairRef}
           name="chair"
           position={[-69.865, 69.418, 6.313]}
           rotation={[-Math.PI / 2, 0, 0]}
-          scale={[0, 0, 0]}
+          scale={section === 0 ? [100, 100, 100] : [0, 0, 0]}
         >
           <mesh
             name="chair_chair_0"
@@ -198,7 +192,7 @@ export function MyRoom(props) {
           name="coffee_table"
           position={[105.786, 38.647, 34.171]}
           rotation={[-Math.PI / 2, 0, 0]}
-          scale={[0, 0, 0]}
+          scale={section === 0 ? [100, 100, 100] : [0, 0, 0]}
         >
           <mesh
             name="coffee_table_coffee_table_0"
@@ -259,9 +253,11 @@ export function MyRoom(props) {
             name="LAPTOP002_kayboard_0"
             geometry={nodes.LAPTOP002_kayboard_0.geometry}
             material={materials.kayboard}
-            position={[0, 0.301, 0]}
+            position={[-0.021, 0.235, -0.05]}
+            scale={[0.855, 1.163, 1.096]}
           />
         </group>
+
         <group
           name="LAPTOP003"
           position={[-151.403, 110.55, 5.468]}
@@ -272,13 +268,15 @@ export function MyRoom(props) {
             name="LAPTOP003_pc_0"
             geometry={nodes.LAPTOP003_pc_0.geometry}
             material={materials.material_15}
-            position={[0, 0.301, 0]}
+            position={[0, 0.301, -0.009]}
+            scale={1.178}
           />
           <mesh
             name="LAPTOP003_screen_0"
             geometry={nodes.LAPTOP003_screen_0.geometry}
             material={screenMaterial}
-            position={[0, 0.301, 0]}
+            position={[0, 0.301, -0.009]}
+            scale={1.178}
           />
         </group>
         <group
@@ -291,7 +289,8 @@ export function MyRoom(props) {
             name="MOUSE_mouse_0"
             geometry={nodes.MOUSE_mouse_0.geometry}
             material={materials.mouse}
-            position={[0, 0.301, 0]}
+            position={[-0.062, 0.27, -0.056]}
+            scale={1.076}
           />
         </group>
         <group
@@ -304,7 +303,7 @@ export function MyRoom(props) {
             name="MUG_cup_of_coffee_0"
             geometry={nodes.MUG_cup_of_coffee_0.geometry}
             material={materials.cup_of_coffee}
-            position={[0, 0.301, 0]}
+            position={[0, 0.301, -0.083]}
           />
         </group>
         <group
@@ -312,7 +311,7 @@ export function MyRoom(props) {
           name="MUG001"
           position={[102.945, 66.273, 58.08]}
           rotation={[-Math.PI / 2, 0, 0]}
-          scale={[0, 0, 0]}
+          scale={section === 0 ? [100, 100, 100] : [0, 0, 0]}
         >
           <mesh
             name="MUG001_cup_of_coffee_0"
@@ -332,7 +331,7 @@ export function MyRoom(props) {
             name="PENCIL_CUP_pencil_holder_0"
             geometry={nodes.PENCIL_CUP_pencil_holder_0.geometry}
             material={materials.pencil_holder}
-            position={[0, 0.301, 0]}
+            position={[0, 0.301, -0.066]}
           />
         </group>
         <group
@@ -345,7 +344,7 @@ export function MyRoom(props) {
             name="pencils002_pencils_0"
             geometry={nodes.pencils002_pencils_0.geometry}
             material={materials.pencils}
-            position={[0, 0.301, 0]}
+            position={[0, 0.301, -0.066]}
           />
         </group>
         <group
@@ -376,27 +375,7 @@ export function MyRoom(props) {
             rotation={[0, 0, 1.589]}
           />
         </group>
-        <group
-          name="TABLE"
-          position={[-134.633, 73.317, -1.265]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          scale={100}
-        >
-          <group name="TABLE001" position={[1.035, -0.394, -0.127]}>
-            <mesh
-              name="TABLE001_desk_drawer_0"
-              geometry={nodes.TABLE001_desk_drawer_0.geometry}
-              material={materials.desk_drawer}
-              position={[0, 0.301, 0]}
-            />
-          </group>
-          <mesh
-            name="TABLE_desk_0"
-            geometry={nodes.TABLE_desk_0.geometry}
-            material={materials.desk}
-            position={[0, 0.301, 0]}
-          />
-        </group>
+
         <mesh
           name="BIG_SHELF_big_shelf_0"
           geometry={nodes.BIG_SHELF_big_shelf_0.geometry}
@@ -453,6 +432,24 @@ export function MyRoom(props) {
           rotation={[-Math.PI / 2, 0, 0]}
           scale={100}
         />
+      </group>
+      <group name="RootNode002">
+        <group
+          name="Node003"
+          position={[-1.338, 0.574, -0.265]}
+          rotation={[-1.571, -0.007, 1.57]}
+        >
+          <mesh
+            name="Node003_1"
+            geometry={nodes.Node003_1.geometry}
+            material={woodMaterial}
+          />
+          <mesh
+            name="Node003_2"
+            geometry={nodes.Node003_2.geometry}
+            material={materials._5_Drawer_1}
+          />
+        </group>
       </group>
       <mesh
         name="bookmark001_empastado_1_0"

@@ -5,84 +5,174 @@ Command: npx gltfjsx@6.5.3 public/models/68a4c9e894be5eaf89915a18.glb
 
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { useControls } from "leva";
-import { useFrame, useGraph } from "@react-three/fiber";
+import { useFrame, useGraph, useThree } from "@react-three/fiber";
 import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 
 export function Avatar(props) {
-  const { animation } = props;
-  const { headFollow, cursorFollow } = useControls({
-    headFollow: false,
-    cursorFollow: false,
-  });
+  const { animation, section } = props;
   const group = useRef();
-  const { scene } = useGLTF("models/68a4c9e894be5eaf89915a18.glb");
+  const { size } = useThree();
+  const { scene } = useGLTF("/models/68a4c9e894be5eaf89915a18.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone);
 
-  const { animations: typingAnimation } = useFBX("animations/Typing.fbx");
-  const { animations: fallingAnimation } = useFBX("animations/Falling.fbx");
+  const { animations: typingAnimation } = useFBX("/animations/Typing.fbx");
+  const { animations: fallingAnimation } = useFBX("/animations/Falling.fbx");
   const { animations: standingGreeting } = useFBX(
-    "animations/StandingGreeting.fbx"
+    "/animations/StandingGreeting.fbx",
+  );
+  const { animations: standingAnimation } = useFBX("/animations/Standing.fbx");
+  const { animations: bowAnimation } = useFBX("/animations/Bow.fbx");
+  const { animations: thankfullAnimation } = useFBX("/animations/Thankful.fbx");
+  const { animations: stumbleAnimation } = useFBX("/animations/Stumble.fbx");
+  const { animations: standingIdleAnimation } = useFBX(
+    "/animations/StandingIdle.fbx",
   );
 
+  standingAnimation[0].name = "Standing";
   typingAnimation[0].name = "Typing";
   standingGreeting[0].name = "StandingGreeting";
   fallingAnimation[0].name = "Falling";
-
+  standingAnimation[0].name = "Standing";
+  bowAnimation[0].name = "Bow";
+  thankfullAnimation[0].name = "Thankful";
+  stumbleAnimation[0].name = "Stumble";
+  standingIdleAnimation[0].name = "StandingIdle";
   const { actions } = useAnimations(
-    [typingAnimation[0], standingGreeting[0], fallingAnimation[0]],
-    group
+    [
+      typingAnimation[0],
+      standingGreeting[0],
+      fallingAnimation[0],
+      standingAnimation[0],
+      bowAnimation[0],
+      thankfullAnimation[0],
+      stumbleAnimation[0],
+      standingIdleAnimation[0],
+    ],
+    group,
   );
 
+  // Configurar qué animaciones se reproducen en loop y cuáles solo una vez
   useEffect(() => {
-    actions[animation].reset().fadeIn(0.5).play();
+    Object.keys(actions).forEach((name) => {
+      const action = actions[name];
+      if (!action) return;
+
+      if (
+        name === "StandingGreeting" ||
+        name === "Bow" ||
+        name === "Standing" ||
+        name === "Thankful" ||
+        name === "Stumble" ||
+        name === "StandingIdle"
+      ) {
+        action.clampWhenFinished = true;
+        action.setLoop(THREE.LoopOnce, 1);
+      } else {
+        action.clampWhenFinished = false;
+        action.setLoop(THREE.LoopRepeat, Infinity);
+      }
+    });
+  }, [actions]);
+
+  useEffect(() => {
+    const action = actions[animation];
+    if (!action) return;
+    action.reset();
+    action.time = 0;
+    action.play();
     return () => {
-      actions[animation]?.reset().fadeOut(0.5);
+      action.stop();
     };
-  }, [animation]);
+  }, [animation, actions]);
+
+  // Seguir el cursor con la cabeza (solo desde la sección 1 en adelante)
+  const headBoneRef = useRef(null);
+  const headBaseQuatRef = useRef(null);
+  const tempQuatRef = useRef(new THREE.Quaternion());
+  const tempEulerRef = useRef(new THREE.Euler(0, 0, 0, "YXZ"));
+
+  useEffect(() => {
+    if (!group.current) return;
+    if (!headBoneRef.current) {
+      const head = group.current.getObjectByName("Head");
+      if (head) {
+        headBoneRef.current = head;
+        headBaseQuatRef.current = head.quaternion.clone();
+      }
+    }
+  }, []);
 
   useFrame((state) => {
-    if (headFollow) {
-      group.current.getObjectByName("Head").lookAt(state.camera.position);
+    const isMobile = size.width < 768;
+    const head = headBoneRef.current;
+    if (!head || !headBaseQuatRef.current) return;
+
+    // Si estamos en la sección 0, volvemos suavemente a la pose base
+    if (section === 0) {
+      head.quaternion.slerp(headBaseQuatRef.current, 0.15);
+      return;
     }
-    if (cursorFollow) {
-      const target = new THREE.Vector3(state.mouse.x, state.mouse.y, 1);
-      group.current.getObjectByName("Spine").lookAt(target);
-    }
+
+    // Desde la sección 1 en adelante, mover ligeramente la cabeza según el mouse (solo desktop)
+    if (isMobile) return;
+    const { x, y } = state.mouse; // rango [-1, 1]
+    const maxYaw = 0.45; // izquierda/derecha
+    const maxPitch = 0.25; // arriba/abajo
+
+    const targetYaw = x * maxYaw;
+    const targetPitch = -y * maxPitch;
+
+    const baseQuat = headBaseQuatRef.current;
+    const euler = tempEulerRef.current;
+    euler.set(targetPitch, targetYaw, 0);
+
+    const targetQuatLocal = tempQuatRef.current;
+    targetQuatLocal.setFromEuler(euler);
+
+    const finalQuat = tempQuatRef.current.clone();
+    finalQuat.multiplyQuaternions(baseQuat, targetQuatLocal);
+
+    head.quaternion.slerp(finalQuat, 0.15);
   });
 
   return (
-    <group {...props} ref={group} dispose={null}>
-      <group rotation-x={-Math.PI / 2}>
+    <group {...props} ref={group} dispose={null} pointerEvents="none">
+      <group rotation-x={-Math.PI / 2} position-x={-0.07}>
         <primitive object={nodes.Hips} />
         <skinnedMesh
+          frustumCulled={false}
           geometry={nodes.Wolf3D_Hair.geometry}
           material={materials.Wolf3D_Hair}
           skeleton={nodes.Wolf3D_Hair.skeleton}
         />
         <skinnedMesh
+          frustumCulled={false}
           geometry={nodes.Wolf3D_Outfit_Top.geometry}
           material={materials.Wolf3D_Outfit_Top}
           skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
         />
         <skinnedMesh
+          frustumCulled={false}
           geometry={nodes.Wolf3D_Outfit_Bottom.geometry}
           material={materials.Wolf3D_Outfit_Bottom}
           skeleton={nodes.Wolf3D_Outfit_Bottom.skeleton}
         />
         <skinnedMesh
+          frustumCulled={false}
           geometry={nodes.Wolf3D_Outfit_Footwear.geometry}
           material={materials.Wolf3D_Outfit_Footwear}
           skeleton={nodes.Wolf3D_Outfit_Footwear.skeleton}
         />
         <skinnedMesh
+          frustumCulled={false}
           geometry={nodes.Wolf3D_Body.geometry}
           material={materials.Wolf3D_Body}
           skeleton={nodes.Wolf3D_Body.skeleton}
         />
         <skinnedMesh
+          frustumCulled={false}
           name="EyeLeft"
           geometry={nodes.EyeLeft.geometry}
           material={materials.Wolf3D_Eye}
@@ -91,6 +181,7 @@ export function Avatar(props) {
           morphTargetInfluences={nodes.EyeLeft.morphTargetInfluences}
         />
         <skinnedMesh
+          frustumCulled={false}
           name="EyeRight"
           geometry={nodes.EyeRight.geometry}
           material={materials.Wolf3D_Eye}
@@ -99,6 +190,7 @@ export function Avatar(props) {
           morphTargetInfluences={nodes.EyeRight.morphTargetInfluences}
         />
         <skinnedMesh
+          frustumCulled={false}
           name="Wolf3D_Head"
           geometry={nodes.Wolf3D_Head.geometry}
           material={materials.Wolf3D_Skin}
@@ -107,6 +199,7 @@ export function Avatar(props) {
           morphTargetInfluences={nodes.Wolf3D_Head.morphTargetInfluences}
         />
         <skinnedMesh
+          frustumCulled={false}
           name="Wolf3D_Teeth"
           geometry={nodes.Wolf3D_Teeth.geometry}
           material={materials.Wolf3D_Teeth}
