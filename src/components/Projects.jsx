@@ -1,5 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { projects } from "../constants/Projects";
+import { Projects as projectsData } from "../constants/Projects";
 import { Image, Text } from "@react-three/drei";
 import { atom, useAtom } from "jotai";
 import { useEffect, useMemo, useRef } from "react";
@@ -98,7 +98,7 @@ const Project = (props) => {
     </group>
   );
 };
-export const currentProjectAtom = atom(Math.floor(projects.length / 2));
+export const currentProjectAtom = atom(Math.floor(projectsData.length / 2));
 const Projects = () => {
   const { viewport } = useThree();
   const [currentProject, setCurrentProject] = useAtom(currentProjectAtom);
@@ -126,7 +126,7 @@ const Projects = () => {
 
   return (
     <group position-y={-viewport.height * 2 - 0.3}>
-      {projects.map((project, index) => (
+      {projectsData.map((project, index) => (
         <group
           key={"project_" + index}
           ref={(el) => (groupRefs.current[index] = el)}
