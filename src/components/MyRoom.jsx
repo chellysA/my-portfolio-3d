@@ -14,7 +14,9 @@ export function MyRoom(props) {
   const chairRef = useRef();
   const mugRef = useRef();
   const coffeeTableRef = useRef();
-  const { nodes, materials } = useGLTF("/models/myRoom.glb");
+  const { nodes, materials } = useGLTF(
+    "/models/myRoom-textures-compressed.glb",
+  );
   const floorTexture = useTexture("/textures/floor.jpg");
   const woodTexture = useTexture("/textures/wood.jpg");
   const screenTexture = useTexture("/textures/screen.png");
@@ -505,4 +507,4 @@ export function MyRoom(props) {
   );
 }
 
-useGLTF.preload("public/models/myRoom.glb");
+useGLTF.preload("/models/myRoom-textures-compressed.glb");
