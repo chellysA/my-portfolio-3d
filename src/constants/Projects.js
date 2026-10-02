@@ -40,7 +40,7 @@ export const Projects = [
     img: quoteRandomMachine,
     title: "Quote Random Machine",
     desc: "Website made with J Query.",
-    url: "https://quote-random-machine-i0vu8f.codesandbox.io/",
+    url: "https://codesandbox.io/p/sandbox/quote-random-machine-i0vu8f/",
   },
   {
     img: calculator,
